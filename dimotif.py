@@ -23,8 +23,14 @@ class DiMotif(object):
         '''
 
         '''
-        self.pos=FileUtility.read_fasta_sequences(pos_fasta)[0:10]
-        self.neg=FileUtility.read_fasta_sequences(neg_fasta)[0:10]
+        if pos_fasta.split('.')[-1]=='txt':
+            self.pos=FileUtility.load_list(pos_fasta)
+        elif pos_fasta.split('.')[-1]=='fasta':
+            self.pos=FileUtility.read_fasta_sequences(pos_fasta)
+        if neg_fasta.split('.')[-1]=='txt':
+             self.neg=FileUtility.load_list(neg_fasta)
+        elif neg_fasta.split('.')[-1]=='fasta':
+            self.neg=FileUtility.read_fasta_sequences(neg_fasta)
         self.seqs=[seq.lower() for seq in self.pos+self.neg]
         self.labels=[1]*len(self.pos)+[0]*len(self.neg)
         self.segmentation_schemes=segmentation_schemes
@@ -82,7 +88,6 @@ class DiMotif(object):
         self.tree=HC.nwk
         FileUtility.save_list(self.output_path+'/motif_tree.txt', [HC.nwk])
 
-
 def checkArgs(args):
     '''
         This function checks the input arguments and returns the errors (if exist) otherwise reads the parameters
@@ -92,15 +97,21 @@ def checkArgs(args):
     # Using the argument parser in case of -h or wrong usage the correct argument usage
     # will be prompted
     parser = argparse.ArgumentParser()
+    
+    def file_choices(choices,fname):
+        ext = os.path.splitext(fname)[1][1:]
+        if ext not in choices:
+           parser.error("file doesn't end with one of {}".format(choices))
+        return fname
 
     ## to do : chi2 print
 
     # positive file #################################################################################################
-    parser.add_argument('--pos', action='store', dest='pos_file', type=str,
+    parser.add_argument('--pos', action='store', dest='pos_file', type=lambda s:file_choices(("txt","fasta"),s),
                         help='positive fasta or txt sequence file')
 
     # negative file #######################################################################################################
-    parser.add_argument('--neg', action='store', dest='pos_file', type=str,
+    parser.add_argument('--neg', action='store', dest='pos_file', type=lambda s:file_choices(("txt","fasta"),s),
                         help='negative fasta or txt sequence file')
 
     # output directory #################################################################################################
