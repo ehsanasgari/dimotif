@@ -119,7 +119,7 @@ def checkArgs(args):
                         help="directory for storing the output files, if doesn't exist will be created.")
 
     # to override the previous files or to continue ####################################################################
-    parser.add_argument('--topn', action='store', dest='topn',default=1000, type=int,
+    parser.add_argument('--topn', action='store', dest='topn',default=100, type=int,
                         help='How many motifs to extract if possible?')
 
     # to override the previous files or to continue ####################################################################
