@@ -111,7 +111,7 @@ def checkArgs(args):
                         help='positive fasta or txt sequence file')
 
     # negative file #######################################################################################################
-    parser.add_argument('--neg', action='store', dest='pos_file', type=lambda s:file_choices(("txt","fasta"),s),
+    parser.add_argument('--neg', action='store', dest='neg_file', type=lambda s:file_choices(("txt","fasta"),s),
                         help='negative fasta or txt sequence file')
 
     # output directory #################################################################################################
