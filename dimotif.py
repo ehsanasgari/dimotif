@@ -24,11 +24,11 @@ class DiMotif(object):
 
         '''
         if pos_fasta.split('.')[-1]=='txt':
-            self.pos=FileUtility.load_list(pos_fasta)
+            self.pos=FileUtility.load_list(pos_fasta)[0:10]
         elif pos_fasta.split('.')[-1]=='fasta':
             self.pos=FileUtility.read_fasta_sequences(pos_fasta)
         if neg_fasta.split('.')[-1]=='txt':
-             self.neg=FileUtility.load_list(neg_fasta)
+             self.neg=FileUtility.load_list(neg_fasta)[0:10]
         elif neg_fasta.split('.')[-1]=='fasta':
             self.neg=FileUtility.read_fasta_sequences(neg_fasta)
         self.seqs=[seq.lower() for seq in self.pos+self.neg]
