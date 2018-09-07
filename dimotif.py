@@ -97,7 +97,7 @@ def checkArgs(args):
     # Using the argument parser in case of -h or wrong usage the correct argument usage
     # will be prompted
     parser = argparse.ArgumentParser()
-    
+
     def file_choices(choices,fname):
         ext = os.path.splitext(fname)[1][1:]
         if ext not in choices:
