@@ -16,19 +16,23 @@ import scipy.stats as st
 from chi2analysis.chi2analysis import Chi2Analysis
 from utility.math_utility import get_sym_kl_rows
 from clustering.hierarchical import HierarchicalClutering
-from proteinseq_util.motif_tree_visualization import VisualizeTreeOfMotifs
+#from proteinseq_util.motif_tree_visualization import VisualizeTreeOfMotifs
 
 class DiMotif(object):
     def __init__(self, pos_fasta, neg_fasta, output_path, segmentation_schemes=10, topN=100):
         '''
 
         '''
-        if pos_fasta.split('.')[-1]=='txt':
+        if not isinstance(pos_fasta, str):
+            self.pos=pos_fasta
+        elif pos_fasta.split('.')[-1]=='txt':
             self.pos=FileUtility.load_list(pos_fasta)[0:10]
         elif pos_fasta.split('.')[-1]=='fasta':
             self.pos=FileUtility.read_fasta_sequences(pos_fasta)
-        if neg_fasta.split('.')[-1]=='txt':
-             self.neg=FileUtility.load_list(neg_fasta)[0:10]
+        if not isinstance(neg_fasta, str):
+            self.neg=neg_fasta
+        elif neg_fasta.split('.')[-1]=='txt':
+            self.neg=FileUtility.load_list(neg_fasta)[0:10]
         elif neg_fasta.split('.')[-1]=='fasta':
             self.neg=FileUtility.read_fasta_sequences(neg_fasta)
         self.seqs=[seq.lower() for seq in self.pos+self.neg]
@@ -36,12 +40,13 @@ class DiMotif(object):
         self.segmentation_schemes=segmentation_schemes
         self.load_alpha_distribution()
         self.prepare_segmentations()
+        print (output_path)
         FileUtility.ensure_dir(output_path)
         self.output_path=output_path
         self.motif_extraction(topN)
 
     def load_alpha_distribution(self):
-        swiss_size_change=FileUtility.load_obj('data_config//swiss_1000_samples.pickle')
+        swiss_size_change=FileUtility.load_obj('data_config/swiss_1000_samples.pickle')
         all_samples=[]
         for i in tqdm.tqdm(range(0,1000)):
             sample=[]
@@ -71,6 +76,7 @@ class DiMotif(object):
                 else:
                     segmented_seqs[idx]+=[CPE_Applier.segment(seq)]
         self.extended_sequences=[' '.join(l) for l in segmented_seqs]
+        self.possible_segmentations=['@@@'.join(l) for l in segmented_seqs]
 
 
     def motif_extraction(self, topn=100):
@@ -80,13 +86,15 @@ class DiMotif(object):
         vocab=cpe_vectorizer.get_feature_names()
         CH=Chi2Analysis(tf_vec,self.labels,vocab)
         vocab_binary=[x[0] for x in CH.extract_features_fdr(self.output_path+'/motifs.txt', N=topn, alpha=5e-2, direction=True, allow_subseq=True, binarization=True, remove_redundant_markers=False) if x[1]>0]
+        vocab_binary=vocab_binary[0:min(100,len(vocab_binary))]
         idxs=[vocab.index(v) for v in vocab_binary]
         pos_matrix=tf_vec.toarray()[0:len(self.pos),idxs]
         DIST=get_sym_kl_rows(pos_matrix.T)
-        HC=HierarchicalClutering(DIST,vocab_binary)
+        FileUtility.save_obj(self.output_path+'/sym_KL', DIST)
+        #HC=HierarchicalClutering(DIST,vocab_binary)
         self.motifs=vocab_binary
-        self.tree=HC.nwk
-        FileUtility.save_list(self.output_path+'/motif_tree.txt', [HC.nwk])
+        #self.tree=HC.nwk
+        #FileUtility.save_list(self.output_path+'/motif_tree.txt', [HC.nwk])
 
 def checkArgs(args):
     '''
@@ -138,7 +146,7 @@ def checkArgs(args):
         print('Extract motifs..')
         DMF=DiMotif(parsedArgs.pos_file,parsedArgs.neg_file,parsedArgs.output_dir, topN=parsedArgs.topn, segmentation_schemes=parsedArgs.segs)
         print('Visualize motifs..')
-        VisualizeTreeOfMotifs(DMF.tree, DMF.motifs)
+        #VisualizeTreeOfMotifs(DMF.tree, DMF.motifs)
     except:
         print ('error occured')
 
@@ -148,5 +156,3 @@ if __name__ == '__main__':
         print(err)
         exit()
 
-
-VisualizeTreeOfMotifs

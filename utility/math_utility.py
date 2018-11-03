@@ -17,6 +17,9 @@ from scipy.sparse import csr_matrix
 from scipy.spatial.distance import pdist, squareform
 from fastcluster import linkage
 
+
+
+
 def get_sym_kl_rows(A):
     '''
     :param A: matrix A

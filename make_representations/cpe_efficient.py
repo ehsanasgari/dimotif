@@ -1,5 +1,8 @@
+from __future__ import unicode_literals
+
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 
 # Modified by Ehsaneddin Asgari
 ### Adapted from Rico's code for machine translation
@@ -19,7 +22,6 @@ Rico Sennrich, Barry Haddow and Alexandra Birch (2016). Neural Machine Translati
 Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (ACL 2016). Berlin, Germany.
 """
 
-from __future__ import unicode_literals
 
 import sys
 sys.path.append('../')

@@ -64,10 +64,7 @@ class Chi2Analysis(object):
         selector.fit_transform(X, self.Y)
         scores = {self.feature_names[i]: (s, selector.pvalues_[i]) for i, s in enumerate(list(selector.scores_)) if
                   not math.isnan(s)}
-        if N==-1:
-            scores = sorted(scores.items(), key=operator.itemgetter([1][0]), reverse=True)
-        else:
-            scores = sorted(scores.items(), key=operator.itemgetter([1][0]), reverse=True)[0:N]
+
 
         f = codecs.open(file_name, 'w')
         c_1 = np.sum(self.Y)
@@ -76,7 +73,34 @@ class Chi2Analysis(object):
         X = X.toarray()
         pos_scores = []
 
+        new_scores={}
+        for w, score in scores.items():
+            if score[1] < 0.05:
+                feature_array = X[:, self.feature_names.index(w)]
+                pos = [feature_array[idx] for idx, x in enumerate(self.Y) if x == 1]
+                neg = [feature_array[idx] for idx, x in enumerate(self.Y) if x == 0]
+                m_pos=np.mean(pos)
+                s_pos=np.std(pos)
+                m_neg=np.mean(neg)
+                s_neg=np.std(neg)
+
+                c11 = np.sum(pos)
+                c01 = c_1 - c11
+                c10 = np.sum(neg)
+                c00 = c_0 - c10
+                s=score[0]
+                if direction and c11 > ((1.0 * c11) * c00 - (c10 * 1.0) * c01):
+                    s=-s
+                if s>0 and len(w)<25:
+                    new_scores[w]=score
+
+        if N==-1:
+            scores = sorted(new_scores.items(), key=operator.itemgetter([1][0]), reverse=True)
+        else:
+            scores = sorted(new_scores.items(), key=operator.itemgetter([1][0]), reverse=True)[0:N]
+
         extracted_features=[]
+
         for w, score in scores:
             if score[1] < 0.05:
                 feature_array = X[:, self.feature_names.index(w)]

@@ -17,24 +17,93 @@ import os
 from multiprocessing import Pool
 import numpy as np
 import tqdm
-from Bio import SeqIO
-from Bio.Alphabet import generic_dna
+from Bio import SeqIO, Entrez
+from Bio.Alphabet import generic_dna, generic_protein
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from scipy import sparse
 import h5py
 import shutil
-
+from urllib.request import urlopen
 
 class FileUtility(object):
     def __init__(self):
         print('File utility object created..')
 
     @staticmethod
-    def create_fasta_file(file_address, corpus, label):
-        seq_id_pairs = [('.'.join([str(idx + 1), label[idx]]), x) for idx, x in enumerate(corpus)]
-        seq_recs = [SeqRecord(Seq(seq, generic_dna), id=id, description='') for id, seq in seq_id_pairs]
+    def download_fasta_files_from_NCBI(accession_ids, db="protein"):
+        Entrez.email='asgari@berkeley.edu'
+        seq_dict=dict()
+        missing_seqs=[]
+        print ('start downloading the sequences..')
+
+        for seq_id in tqdm.tqdm(accession_ids):
+            try:
+                handle = Entrez.efetch(db=db, id=seq_id, rettype="fasta", retmode="text")
+                seq=''.join(handle.read().split('\n')[1::])
+                seq_dict[seq_id]=seq
+            except:
+                missing_seqs.append(seq_id)
+        SID=list(seq_dict.keys())
+        SID.sort()
+        seqs=[seq_dict[seqID] for seqID in SID]
+        FileUtility.create_fasta_file(output_file,seqs,SID, num=False, type=db)
+        return missing_seqs
+    @staticmethod
+    def getUni(seq_id):
+        try:
+            handle = urlopen("http://www.uniprot.org/uniprot/"+seq_id+".xml")
+            return seq_id, str(SeqIO.read(handle, "uniprot-xml").seq)
+        except:
+            return seq_id, False
+    @staticmethod
+    def download_fasta_files_from_Uniprot(output_file, accession_ids, num_p=10):
+        seq_dict=dict()
+        missing_seqs=[]
+        pool = Pool(processes=num_p)
+        print ('start downloading the sequences..')
+        for seq_id, seq in tqdm.tqdm(pool.imap_unordered(FileUtility.getUni, accession_ids, chunksize=num_p),total=len(accession_ids)):
+            if seq:
+                seq_dict[seq_id]=seq
+            else:
+                missing_seqs.append(seq_id)
+        pool.close()
+        SID=list(seq_dict.keys())
+        SID.sort()
+        seqs=[seq_dict[seqID] for seqID in SID]
+        FileUtility.create_fasta_file(output_file,seqs,SID, num=False, type='protein')
+        return missing_seqs
+    @staticmethod
+    def getELM(seq_id):
+        try:
+            handle = urlopen("http://elm.eu.org/instances.fasta?q="+seq_id)
+            return seq_id, str(handle.readlines()[1].strip().decode("utf-8"))
+        except:
+            return seq_id, False
+    @staticmethod
+    def download_fasta_files_from_ELM(output_file, accession_ids, num_p=10):
+        seq_dict=dict()
+        missing_seqs=[]
+        pool = Pool(processes=num_p)
+        print ('start downloading the sequences..')
+        for seq_id, seq in tqdm.tqdm(pool.imap_unordered(FileUtility.getELM, accession_ids, chunksize=num_p),total=len(accession_ids)):
+            if seq:
+                seq_dict[seq_id]=seq
+            else:
+                missing_seqs.append(seq_id)
+        pool.close()
+        SID=list(seq_dict.keys())
+        SID.sort()
+        seqs=[seq_dict[seqID] for seqID in SID]
+        FileUtility.create_fasta_file(output_file,seqs,SID, num=False, type='protein')
+        return missing_seqs
+
+    @staticmethod
+    def create_fasta_file(file_address, corpus, label=None, num=True, type='protein'):
+        seq_id_pairs = [('.'.join([str(idx + 1), label[idx] if label else ''] ) if num else label[idx], x) for idx, x in enumerate(corpus)]
+        seq_recs = [SeqRecord(Seq(seq, generic_protein if type=='protein' else generic_dna), id=id, description='') for id, seq in seq_id_pairs]
         SeqIO.write(seq_recs, file_address, "fasta")
+
 
 
     @staticmethod
