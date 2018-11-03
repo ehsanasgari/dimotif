@@ -11,7 +11,8 @@ from multiprocessing import Pool
 
 #############################################################
 # Simple script for learning segmentation steps from a fasta file
-# The output, "path_to_mergings", can be instead of Swiss-Prot segmentation
+# Output: the file containing merging steps (i.e., "path_to_mergings"),
+# can be used instead of Swiss-Prot merging steps
 #############################################################
 
 # Inputs
