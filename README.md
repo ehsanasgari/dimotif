@@ -1,6 +1,6 @@
-# DiMotif: Alignment-free Discriminative Protein Motif Miner
+# DiMotif: Alignment-free Discriminative Protein Motif Discovery
 
-We present DiMotif as an alignment-free discriminative motif miner and evaluate the method for finding protein motifs in different settings. The significant motifs extracted could reliably detect the integrins, integrin-binding, and biofilm formation-related proteins on a reserved set of sequences with high F1 scores. In addition, DiMotif could detect experimentally verified motifs related to nuclear localization signals.
+We present DiMotif as an alignment-free discriminative motif discovery method and evaluate the method for finding protein motifs in three different settings: (1) comparison of DiMotif with two existing approaches on 20 distinct motif discovery problems which are experimentally verified, (2) classification-based approach for the motifs extracted for integrins, integrin-binding proteins, and biofilm formation, and (3) in sequence pattern searching for nuclear localization signal. The DiMotif, in general, obtained high recall scores, while having a comparable F1 score with other methods in discovery of experimentally verified motifs. Having high recall suggests that the DiMotif can be used for short-list creation for further experimental investigations on motifs.
 
 
 ### DiMotif paper is currently under review and available on BioArXiv:
@@ -16,6 +16,11 @@ We present DiMotif as an alignment-free discriminative motif miner and evaluate 
     journal = {bioRxiv}
     }
 ```
+
+<h1> DiMotif step-by-step </h1>
+
+An ipython notebook containing an example of motif discovery using DiMotif is provided <a href=' https://github.com/ehsanasgari/dimotif/blob/master/notebook/DiMotif_step_by_step_example.ipynb
+'>here<a/>.
 
 
 <h1> User Manual </h1>
