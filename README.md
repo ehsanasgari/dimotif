@@ -19,8 +19,9 @@ We present DiMotif as an alignment-free discriminative motif discovery method an
 
 <h1> DiMotif step-by-step </h1>
 
-An ipython notebook containing an example of motif discovery using DiMotif is provided <a href=' https://github.com/ehsanasgari/dimotif/blob/master/notebook/DiMotif_step_by_step_example.ipynb
-'>here<a/>.
+An ipython notebook containing an example of motif discovery using DiMotif is provided here: 
+https://github.com/ehsanasgari/dimotif/blob/master/notebook/DiMotif_step_by_step_example.ipynb
+
 
 
 <h1> User Manual </h1>
