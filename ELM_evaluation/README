@@ -1,0 +1,30 @@
+
+
+The files related to the evaluation over ELM dataset are provided here. Within each directory you can find the following files:
+
+# sequences related to the positive and the negative classes
+neg.fasta
+pos.fasta
+
+# segmentation steps obtained from the positive set (domain specific)
+ppe.txt
+
+# The output of DLocalMotif discriminative motif discovery tool
+out.html
+
+# The output of HH-Motif obtained from SLALOM git repo and then the motif sequences were extracted
+out_hhmotif.txt
+
+
+# motif extracted using domain specific segmentation
+motifs.txt
+
+# motif extracted using swiss-prot  segmentation
+motifs_sws.txt
+
+
+# co-occurence matrix of motifs using domain specific segmentation
+sym_KL.pickle
+
+# co-occurence matrix of motifs using swiss-prot  segmentation
+sym_KL_sws.pickle
